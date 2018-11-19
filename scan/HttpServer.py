@@ -32,8 +32,10 @@ class handleThread(threading.Thread):
         print handleClass
 
     def run(self):
-        time.sleep(10)
+        time.sleep(1)
         print self.getName()
+        scanobj = ScanWebSite(scanUrl="http://wap.sn.10086.cn/h5/index/html/home.html");
+        scanobj.start();
 
         # print self.getName()
         # self.server.send_response(200)
@@ -71,10 +73,10 @@ class handleClass(BaseHTTPRequestHandler):
 
         if query[0].startswith('/scan'):
             self.wfile.write("ok");
-            p = myprocess()
-            p.start()
-            # thexecute = handleThread(query[1],self)
-            # thexecute.start()
+            # p = myprocess()
+            # p.start()
+            thexecute = handleThread(query[1],self)
+            thexecute.start()
             # self.send_response(200)
             # self.send_header('Content-type', 'text/html')
             # self.end_headers()
@@ -83,5 +85,7 @@ class handleClass(BaseHTTPRequestHandler):
             self.wfile.write("hello===="+path)
 
 if __name__ == '__main__':
+    print '启动http服务成功成功'
     httpserver=HTTPServer(("127.0.0.1",9999),handleClass);
     httpserver.serve_forever();
+
