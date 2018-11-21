@@ -1,13 +1,14 @@
-#coding=utf-8
+# coding:GBK
 import urllib
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 import threading
 import time
-
 from multiprocessing import Pool
+from configfile import *
 
 from multiprocessing import Process
 from scanwebsite import *
+
 
 
 class myprocess(Process):
@@ -18,24 +19,41 @@ class myprocess(Process):
 
 
     def run(self):
-        scanobj = ScanWebSite(scanUrl="http://wap.sn.10086.cn/h5/index/html/home.html");
-        scanobj.start();
+        scanobj = ScanWebSite(scanUrl="http://wap.sn.10086.cn/h5/index/html/home.html")
+        scanobj.start()
 
 
 
 class handleThread(threading.Thread):
     def __init__(self, jsonParam,handleClass ):
-        super(handleThread, self).__init__()#æ³¨æ„ï¼šä¸€å®šè¦æ˜¾å¼çš„è°ƒç”¨çˆ¶ç±»çš„åˆå§‹åŒ–å‡½æ•°ã€‚
+        super(handleThread, self).__init__()#×¢Òâ£ºÒ»¶¨ÒªÏÔÊ½µÄµ÷ÓÃ¸¸ÀàµÄ³õÊ¼»¯º¯Êı¡£
         self.param = jsonParam
         self.server = handleClass
+        self.error = None
         print jsonParam
         print handleClass
+        urlinfo = urlparse.urlparse(self.param)
+        params = urlparse.parse_qs(urlinfo.query)
+        if params.get("transid"):
+            self.transid = params.get("transid")[0]
+        else:
+            self.error="transid must not null"
+        if params.get("scanurl"):
+            self.scanurl = urllib.unquote(params.get("scanurl")[0])
+        else:
+            self.error = "scanurl must not null"
+        if params.get("deep"):
+            self.deep = params.get("deep")[0]
+        else:
+            self.deep = 1
+
+    def checkparam(self):
+        return self.error
 
     def run(self):
-        time.sleep(1)
-        print self.getName()
-        scanobj = ScanWebSite(scanUrl="http://wap.sn.10086.cn/h5/index/html/home.html");
-        scanobj.start();
+        print self.getName()+"Ïß³Ì¿ªÊ¼£¬É¨ÃèµØÖ·Îª£º"+str(self.scanurl)+" É¨ÃèÉî¶ÈÎª£º"+str(self.deep)+" É¨ÃèÈÕÖ¾Îª£º"+str(self.transid)+".log"
+        scanobj = ScanWebSite(scanUrl=self.scanurl, logname=str(self.transid)+".log")
+        scanobj.start()
 
         # print self.getName()
         # self.server.send_response(200)
@@ -64,7 +82,7 @@ class handleClass(BaseHTTPRequestHandler):
         print 'dsdsds'
 
         path = self.path
-        print 'path........'+path;
+        print 'path........'+path
         query = urllib.splitquery(path)
         print query[0]
 
@@ -72,10 +90,15 @@ class handleClass(BaseHTTPRequestHandler):
 
 
         if query[0].startswith('/scan'):
-            self.wfile.write("ok");
+
+            thexecute = handleThread(path, self)
+            checkinfo = thexecute.checkparam()
+            if checkinfo:
+                self.wfile.write(checkinfo)
+                return
+            self.wfile.write("ok")
             # p = myprocess()
             # p.start()
-            thexecute = handleThread(query[1],self)
             thexecute.start()
             # self.send_response(200)
             # self.send_header('Content-type', 'text/html')
@@ -85,7 +108,14 @@ class handleClass(BaseHTTPRequestHandler):
             self.wfile.write("hello===="+path)
 
 if __name__ == '__main__':
-    print 'å¯åŠ¨httpæœåŠ¡æˆåŠŸæˆåŠŸ'
-    httpserver=HTTPServer(("127.0.0.1",9999),handleClass);
-    httpserver.serve_forever();
+    print 'Æô¶¯http'
+    config = ConfigFile()
+    ip = config.getvalue("bindip")
+    port = config.getvalue("port")
+
+    print "Æô¶¯ http ·şÎñ °ó¶¨ipÎª"+str(ip)+"°ó¶¨¶Ë¿ÚÎª£º"+str(port)
+    HOST, PORT = str("127.0.0.1"), int(port)
+
+    httpserver=HTTPServer((HOST,PORT),handleClass)
+    httpserver.serve_forever()
 

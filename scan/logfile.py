@@ -1,6 +1,6 @@
-# coding:utf-8
+# coding:GBK
 
-# 鎵弿缁撴灉鏂囦欢淇濆瓨
+# 扫描结果文件保存
 # author:wuwh
 
 class LogFile(object):
@@ -11,7 +11,7 @@ class LogFile(object):
         try:
             self.openfile =open(str(fileDir)+str(fileName),"a+")
         except Exception as e :
-            print "鏂囦欢鎵撳紑寮傚父"
+            print "文件打开异常"
 
     def writeLine(self,line):
         if self.openfile!=None:
@@ -24,7 +24,7 @@ class LogFile(object):
 
 if __name__ == '__main__':
     log = LogFile(fileName="log.txt")
-    log.writeLine("浣犲ソ")
+    log.writeLine("你好")
     log.writeLine("hello")
     log.close()
 

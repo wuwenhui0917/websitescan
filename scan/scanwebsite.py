@@ -1,6 +1,6 @@
-# coding:utf-8
+# coding:GBK
 
-# ç½‘ç«™æ‰«æå·¥å…·ï¼Œæ‰«æç½‘ç«™å†…éƒ¨ä¸­æ‰€æœ‰çš„urlï¼Œjsç­‰èµ„æº
+# ÍøÕ¾É¨Ãè¹¤¾ß£¬É¨ÃèÍøÕ¾ÄÚ²¿ÖĞËùÓĞµÄurl£¬jsµÈ×ÊÔ´
 # author:wuwh
 import Queue
 import time
@@ -17,22 +17,22 @@ from webmap import *
 class ScanWebSite(object):
 
 
-    def __init__(self,domain="10086.cn.log",scanUrl=None):
+    def __init__(self,scanUrl,logname="scan.log",deep=2,domain="10086"):
         self.domain=domain
-        # å·²ç»æ‰«æçš„åœ°å€
+        # ÒÑ¾­É¨ÃèµÄµØÖ·
         self.listhassacnaurl=[]
         self.htmllist=Queue.Queue()
         self.basedoamin=""
         self.scanurl = scanUrl
-        self.logFile = LogFile(fileName=domain)
+        self.logFile = LogFile(fileName=logname)
         map = WebsitrTree(startValue=scanUrl)
         self.webtree = map
-        self.deep=2
+        self.deep=deep
     def start(self):
         self.chrome = webdriver.Chrome()
 
         self.chrome.set_window_size(0, 0)
-        if self.scanurl !=None:
+        if self.scanurl != None:
             self._startURL(self.scanurl)
 
     def _close(self):
@@ -48,21 +48,24 @@ class ScanWebSite(object):
             if html not in self.listhassacnaurl:
                 try:
                     print "#################################################################################"
-                    print "å¼€å§‹æ‰«æ" + html
+                    print "¿ªÊ¼É¨Ãè£º" + html
                     print self.basedoamin
                     print "#################################################################################"
 
-                    # ç›¸åŒåŸŸåä¸‹
+                    # ÏàÍ¬ÓòÃûÏÂ
                     if str(html).find(self.basedoamin) > -1:
                         self.execute(html)
                     else:
-                        print "ä¸ç¬¦åˆè¦æ±‚"
-                    # æ”¾å…¥å·²ç»æ‰«æé˜Ÿåˆ—ä¸­
+                        print "ÒªÉ¨ÃèµÄ:"+str(html)+" ²»ÊÇ±¾Õ¾µãÏÂµÄurl²»½øĞĞÉ¨Ãè"
+                    # ·ÅÈëÒÑ¾­É¨Ãè¶ÓÁĞÖĞ
                     self.listhassacnaurl.append(html)
                 except Exception as e:
                     print e
                     pass
-                print "ä»»åŠ¡é˜Ÿåˆ—é•¿åº¦ä¸ºï¼š"+str(self.htmllist.qsize())
+                print "µ±Ç°É¨Ãè¶ÓÁĞ³¤¶ÈÎª £º"+str(self.htmllist.qsize())
+            else:
+                print str(html)+" ÒÑ¾­É¨Ãè¹ı£¬²»ÓÃÔÙÉ¨Ãè"
+
         self._close()
 
     def getRealUrl(self, url, currenturl):
@@ -85,23 +88,23 @@ class ScanWebSite(object):
         # chrome.get("http://service.sn.10086.cn/pch5/index/html/index.html")
         self.chrome.get(baseurl)
         time.sleep(1)
-        # è®¾ç½®
+        # ÉèÖÃ
         # parseUrl(baseurl)
         urlinfos = urlparse.urlparse(str(baseurl))
         if self.basedoamin != urlinfos.netloc:
             # print basedoamin + "============" + urlinfos.netloc
-            print "domain ä¸ä¸€è‡´"
+            print "²»ÊÇÍ¬Ò»¸öÓòÃûÏÂµÄ£¬²»É¨Ãè"
             return
-        # strpasswprd = raw_input("ç™»é™†æˆåŠŸåè¯·æŒ‰ä»»æ„é”®: ");
+        # strpasswprd = raw_input("µÇÂ½³É¹¦ºóÇë°´ÈÎÒâ¼ü: ");
         # print "Received input is : ", str
-        # å¤„ç†urlè·å–domainç­‰ä¿¡æ¯
+        # ´¦Àíurl»ñÈ¡domainµÈĞÅÏ¢
         # parseUrl(baseurl)
         listurl = []
         list = self.chrome.find_elements(By.TAG_NAME, "a")
         print "a========="+str(len(list))
         for ele in list:
             url = ele.get_attribute("href")
-            goodssrc = ele.get_attribute("goodsurl");
+            goodssrc = ele.get_attribute("goodsurl")
             # print url;
             strUrl = str(url)
             print strUrl
@@ -115,14 +118,14 @@ class ScanWebSite(object):
                 childrenurl = self.getRealUrl(strUrl, baseurl)
                 listurl.append(childrenurl)
                 if childrenurl not in self.listhassacnaurl:
-                    #åŠ å…¥ç½‘ç«™åœ°å›¾ä¸­
+                    #¼ÓÈëÍøÕ¾µØÍ¼ÖĞ
                     self.webtree.addChild(childValue=childrenurl,paraentValue=baseurl)
                     deep = self.webtree.getDeep(childrenurl)
-                    print ""+childrenurl+" æ˜¯ç¬¬"+str(deep)+"å±‚ æ‰«ææœ€å¤§å±‚ä¸º"+str(self.deep)
+                    print ""+childrenurl+" ÊÇµÚ"+str(deep)+"²ã  ,ÅäÖÃÉ¨Ãæ²ã¼¶Îª£º "+str(self.deep)
                     if deep <= self.deep:
-                       print 'å°†'+ childrenurl+"åŠ å…¥åç»­æ‰«æé˜Ÿåˆ— æ‰«æé˜Ÿåˆ—é•¿åº¦ä¸º:"+str(self.htmllist.qsize() )
+                       print '½«'+ childrenurl+" Ìí¼Óµ½É¨Ãè¶ÓÁĞÖĞ£¬µ±Ç°É¨Ãè¶ÓÁĞÎª: "+str(self.htmllist.qsize() )
                        self.htmllist.put(childrenurl)
-                    # print "æ‰«æé˜Ÿåˆ—é•¿åº¦ä¸ºï¼š" + str(len(self.htmllist))
+                    # print "É¨Ãè¶ÓÁĞ³¤¶ÈÎª£º" + str(len(self.htmllist))
 
             if goodssrc != None and goodssrc != '':
                 listurl.append(self.getRealUrl(goodssrc, baseurl))
@@ -131,7 +134,7 @@ class ScanWebSite(object):
 
                 # print 'goodsurl::::::::::::::' + goodssrc
 
-        # å¤„ç†å›¾ç‰‡
+        # ´¦ÀíÍ¼Æ¬
         imagess = self.chrome.find_elements(By.TAG_NAME, "img")
         for img in imagess:
             imgsrcurl = img.get_attribute("src")
@@ -140,7 +143,7 @@ class ScanWebSite(object):
                 # print 'img:url' + strImgsrc
                 listurl.append(self.getRealUrl(strImgsrc, baseurl))
 
-        # css æ‰«æ
+        # css É¨Ãè
         links = self.chrome.find_elements(By.TAG_NAME, "link")
         for link in links:
             linksrcurl = link.get_attribute("href")
@@ -148,7 +151,7 @@ class ScanWebSite(object):
             if strlinksrcurl != None and strlinksrcurl != '':
                 # print 'link:url' + strlinksrcurl
                 listurl.append(self.getRealUrl(strlinksrcurl, baseurl))
-        # æ‰«é¢js
+        # É¨Ãæjs
         scriptlinks = self.chrome.find_elements(By.TAG_NAME, "script")
         for jslink in scriptlinks:
             linksrcurl = jslink.get_attribute("src")
@@ -162,11 +165,11 @@ class ScanWebSite(object):
 
         for visiturl in listurl:
             code = self.getPageContent(visiturl)
-            self.logFile.writeLine(visiturl+"="+str(code))
+            self.logFile.writeLine(visiturl+"    "+str(code))
 
             # print str(visiturl) + "\t=============result========:" + str(code)
     #
-    # è·å–é¡µé¢å“åº”ç 
+    # »ñÈ¡Ò³ÃæÏìÓ¦Âë
     #
     def getPageContent(self,url):
         try:
@@ -179,5 +182,5 @@ class ScanWebSite(object):
             return -1
 
 if __name__ == '__main__':
-    scanobj =ScanWebSite(scanUrl="http://wap.sn.10086.cn/h5/index/html/home.html");
-    scanobj.start();
+    scanobj = ScanWebSite(scanUrl="http://wap.sn.10086.cn/h5/index/html/home.html")
+    scanobj.start()

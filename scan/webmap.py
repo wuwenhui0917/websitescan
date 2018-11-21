@@ -1,6 +1,6 @@
-# coding:utf-8
+# coding:GBK
 
-# å½¢æˆç«™ç‚¹åœ°å›¾ä¿¡æ¯
+# ĞÎ³ÉÕ¾µãµØÍ¼ĞÅÏ¢
 # author:wuwh
 
 class WebsitrTree(object):
@@ -23,13 +23,13 @@ class WebsitrTree(object):
 
 
 #
-# æ ‘å½¢èŠ‚ç‚¹
+# Ê÷ĞÎ½Úµã
 # author:wuwh
 class TreeNode(object):
     def __init__(self,nodevalue,parentnode=None):
-        #æœ¬èŠ‚ç‚¹ä¸Šçš„æ•°æ®
+        #±¾½ÚµãÉÏµÄÊı¾İ
         self.value=nodevalue
-        #æ­¤èŠ‚ç‚¹çš„å­èŠ‚ç‚¹
+        #´Ë½ÚµãµÄ×Ó½Úµã
         self.children = []
         if parentnode==None:
             self.level=0;
