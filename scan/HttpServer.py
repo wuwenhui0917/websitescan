@@ -1,22 +1,15 @@
 # coding:GBK
-import urllib
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 import threading
-import time
-from multiprocessing import Pool
 from configfile import *
-
 from multiprocessing import Process
 from scanwebsite import *
-
 
 
 class myprocess(Process):
 
     def __init__(self, group=None, target=None, name=None, args=(), kwargs={}):
         super(myprocess, self).__init__(group, target, name, args, kwargs)
-
-
 
     def run(self):
         scanobj = ScanWebSite(scanUrl="http://wap.sn.10086.cn/h5/index/html/home.html")
@@ -37,7 +30,7 @@ class handleThread(threading.Thread):
         if params.get("transid"):
             self.transid = params.get("transid")[0]
         else:
-            self.error="transid must not null"
+            self.error = "transid must not null"
         if params.get("scanurl"):
             self.scanurl = urllib.unquote(params.get("scanurl")[0])
         else:
@@ -69,28 +62,22 @@ class handleThread(threading.Thread):
 
 class handleClass(BaseHTTPRequestHandler):
 
-
-
     def _writeheads(self):
         print self.path
         print self.headers
-        self.send_response(200);
-        self.send_header('Content-type', 'text/html');
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
         self.end_headers()
 
     def do_GET(self):
         print 'dsdsds'
-
         path = self.path
         print 'path........'+path
         query = urllib.splitquery(path)
         print query[0]
 
         self._writeheads()
-
-
         if query[0].startswith('/scan'):
-
             thexecute = handleThread(path, self)
             checkinfo = thexecute.checkparam()
             if checkinfo:
@@ -116,6 +103,6 @@ if __name__ == '__main__':
     print "启动 http 服务 绑定ip为"+str(ip)+"绑定端口为："+str(port)
     HOST, PORT = str("127.0.0.1"), int(port)
 
-    httpserver=HTTPServer((HOST,PORT),handleClass)
+    httpserver = HTTPServer((HOST,PORT), handleClass)
     httpserver.serve_forever()
 
