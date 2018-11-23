@@ -12,27 +12,35 @@ import urlparse
 # import logfile
 from logfile import *
 from webmap import *
+import sys
 
 
 class ScanWebSite(object):
 
-
-    def __init__(self,scanUrl,logname="scan.log",deep=2,domain="10086"):
+    def __init__(self,scanUrl,logname="scan.log",deep=2,domain="10086",chromehandle = None,websitecode='utf-8'):
         self.domain=domain
         # 已经扫描的地址
         self.listhassacnaurl=[]
-        self.htmllist=Queue.Queue()
+        self.htmllist = Queue.Queue()
         self.basedoamin=""
         self.scanurl = scanUrl
         self.logFile = LogFile(fileName=logname)
         map = WebsitrTree(startValue=scanUrl)
         self.webtree = map
-        self.deep=deep
-    def start(self):
-        self.chrome = webdriver.Chrome()
+        self.deep = deep
+        self.chrome = None
+        self.chromehandle = chromehandle
+        self.websitecode=websitecode
 
+    def start(self):
+        reload(sys)
+        sys.setdefaultencoding(self.websitecode)
+        option = webdriver.ChromeOptions()
+        option.add_argument('headless')
+        self.chrome = webdriver.Chrome(chrome_options=option)
         self.chrome.set_window_size(0, 0)
-        if self.scanurl != None:
+        # webdriver.PhantomJS.title.encode("utf-8")
+        if self.scanurl:
             self._startURL(self.scanurl)
 
     def _close(self):
@@ -82,7 +90,6 @@ class ScanWebSite(object):
             #     return urlparse.urljoin(currentUrl,url);
 
             # return None
-
 
     def execute(self,baseurl):
         # chrome.get("http://service.sn.10086.cn/pch5/index/html/index.html")
@@ -182,5 +189,5 @@ class ScanWebSite(object):
             return -1
 
 if __name__ == '__main__':
-    scanobj = ScanWebSite(scanUrl="http://wap.sn.10086.cn/h5/index/html/home.html")
+    scanobj = ScanWebSite(scanUrl="http://wap.sn.10086.cn")
     scanobj.start()

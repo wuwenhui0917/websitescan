@@ -4,6 +4,9 @@ import threading
 from configfile import *
 from multiprocessing import Process
 from scanwebsite import *
+from SftpClient import *
+
+config = ConfigFile()
 
 
 class myprocess(Process):
@@ -18,6 +21,7 @@ class myprocess(Process):
 
 
 class handleThread(threading.Thread):
+
     def __init__(self, jsonParam,handleClass ):
         super(handleThread, self).__init__()#注意：一定要显式的调用父类的初始化函数。
         self.param = jsonParam
@@ -47,17 +51,20 @@ class handleThread(threading.Thread):
         print self.getName()+"线程开始，扫描地址为："+str(self.scanurl)+" 扫描深度为："+str(self.deep)+" 扫描日志为："+str(self.transid)+".log"
         scanobj = ScanWebSite(scanUrl=self.scanurl, logname=str(self.transid)+".log")
         scanobj.start()
-
-        # print self.getName()
-        # self.server.send_response(200)
-        # self.server.send_header('Content-type', 'text/html')
-        # self.server.end_headers()
-        # self.server.end_headers()
-        # self.send_response(200)
-
-        # self.server.send_response(200,"hello")
-        # self.server.finish()
-        # self.server.wfile.write("hello====")
+        ftptag = int(config.getvalue("ftptag"))
+        if ftptag == 1:
+            sft = FtpClient(ftpip=config.getStringvalue("ftpip"),
+                            ftppasswd=config.getStringvalue("ftppwd"),
+                            ftpuser=config.getStringvalue("ftpuser")
+                            )
+            try:
+                sft.connection()
+                sft.upload(str(self.transid)+".log",config.getStringvalue("ftpdir")+"/"+str(self.transid)+".log")
+                print(str(self.transid)+" 文件上传成功上传成功")
+            except Exception as e:
+                print("[ERROR:] 链接异常", e)
+            finally:
+                sftp.close()
 
 
 class handleClass(BaseHTTPRequestHandler):
@@ -95,14 +102,14 @@ class handleClass(BaseHTTPRequestHandler):
             self.wfile.write("hello===="+path)
 
 if __name__ == '__main__':
-    print '启动http'
-    config = ConfigFile()
-    ip = config.getvalue("bindip")
+    print '启动服务端'
+
+    ip = str(config.getvalue("bindip")).strip()
     port = config.getvalue("port")
+    # ip = "127.0.0.1"
 
-    print "启动 http 服务 绑定ip为"+str(ip)+"绑定端口为："+str(port)
-    HOST, PORT = str("127.0.0.1"), int(port)
-
-    httpserver = HTTPServer((HOST,PORT), handleClass)
+    print "启动 http 服务 绑定ip为"+ip+"绑定端口为："+str(port)
+    HOST, PORT = ip, int(port)
+    httpserver = HTTPServer((HOST, PORT), handleClass)
     httpserver.serve_forever()
 
