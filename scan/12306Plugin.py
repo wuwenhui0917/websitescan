@@ -3,7 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
 
-checi = "G123"
+checi = "G105"
 diriver = webdriver.Chrome()
 diriver.get("https://kyfw.12306.cn/otn/leftTicket/init")
 

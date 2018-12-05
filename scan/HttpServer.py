@@ -5,6 +5,7 @@ from configfile import *
 from multiprocessing import Process
 from scanwebsite import *
 from SftpClient import *
+from httpclient import *
 
 config = ConfigFile()
 
@@ -17,7 +18,6 @@ class myprocess(Process):
     def run(self):
         scanobj = ScanWebSite(scanUrl="http://wap.sn.10086.cn/h5/index/html/home.html")
         scanobj.start()
-
 
 
 class handleThread(threading.Thread):
@@ -53,6 +53,9 @@ class handleThread(threading.Thread):
         scanobj.start()
         ftptag = int(config.getvalue("ftptag"))
         if ftptag == 1:
+            print "frpip="+config.getStringvalue("ftpip")
+            print "ftppwd="+config.getStringvalue("ftppwd")
+            print "ftpuser="+config.getStringvalue("ftpuser")
             sft = FtpClient(ftpip=config.getStringvalue("ftpip"),
                             ftppasswd=config.getStringvalue("ftppwd"),
                             ftpuser=config.getStringvalue("ftpuser")
@@ -61,10 +64,18 @@ class handleThread(threading.Thread):
                 sft.connection()
                 sft.upload(str(self.transid)+".log",config.getStringvalue("ftpdir")+"/"+str(self.transid)+".log")
                 print(str(self.transid)+" 文件上传成功上传成功")
+                httpurl = config.getvalue("ftpcallback")
+                if httpurl:
+                    httpclient = HttpClient(str(httpurl))
+                    _params = {"transid": self.transid, "logfile": str(self.transid)+".log"}
+
+                    if httpclient.do_get(_params):
+                        print("回调："+self.transid+"成功")
             except Exception as e:
                 print("[ERROR:] 链接异常", e)
             finally:
-                sftp.close()
+                if sft:
+                    sft.close()
 
 
 class handleClass(BaseHTTPRequestHandler):

@@ -50,8 +50,8 @@ class ConfigFile(object):
         return self.dict[key]
 
     def getStringvalue(self, key):
-        str(self.dict[key]).strip()
+        return str(self.dict[key]).strip()
 
 if __name__ == '__main__':
     config = ConfigFile()
-    print str(config.getvalue("ftpdir"))
+    print str(config.getStringvalue("ftpip"))

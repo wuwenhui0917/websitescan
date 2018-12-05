@@ -121,7 +121,7 @@ class ScanWebSite(object):
             #     listurl.append(url)
             # if strUrl.startswith("/"):
             #     listurl(domain+strUrl);
-            if not strUrl.startswith("java") and url != None and strUrl != '':
+            if not strUrl.startswith("java") and url and strUrl != '':
                 childrenurl = self.getRealUrl(strUrl, baseurl)
                 listurl.append(childrenurl)
                 if childrenurl not in self.listhassacnaurl:
@@ -133,6 +133,11 @@ class ScanWebSite(object):
                        print '将'+ childrenurl+" 添加到扫描队列中，当前扫描队列为: "+str(self.htmllist.qsize() )
                        self.htmllist.put(childrenurl)
                     # print "扫描队列长度为：" + str(len(self.htmllist))
+
+            #如果a标签时java脚本时
+            elif strUrl.startswith("java"):
+                method = strUrl.split(":")[1]
+                print "js======="+strUrl
 
             if goodssrc != None and goodssrc != '':
                 listurl.append(self.getRealUrl(goodssrc, baseurl))
@@ -146,7 +151,7 @@ class ScanWebSite(object):
         for img in imagess:
             imgsrcurl = img.get_attribute("src")
             strImgsrc = str(imgsrcurl)
-            if strImgsrc != None and strImgsrc != '':
+            if strImgsrc and strImgsrc != '':
                 # print 'img:url' + strImgsrc
                 listurl.append(self.getRealUrl(strImgsrc, baseurl))
 
@@ -163,7 +168,7 @@ class ScanWebSite(object):
         for jslink in scriptlinks:
             linksrcurl = jslink.get_attribute("src")
             strjssrcurl = str(linksrcurl)
-            if strjssrcurl != None and strjssrcurl != '':
+            if strjssrcurl and strjssrcurl != '':
                 # print 'script:url' + strjssrcurl
                 listurl.append(self.getRealUrl(strjssrcurl, baseurl))
 
@@ -172,7 +177,7 @@ class ScanWebSite(object):
 
         for visiturl in listurl:
             code = self.getPageContent(visiturl)
-            self.logFile.writeLine(visiturl+"    "+str(code))
+            self.logFile.writeLine(str(visiturl).strip()+"    "+str(code))
 
             # print str(visiturl) + "\t=============result========:" + str(code)
     #
@@ -183,11 +188,17 @@ class ScanWebSite(object):
             page = urllib.urlopen(url)
             if page.code != 200:
                 print url + "\t" + str(page.code)
-            return page.code;
+            return page.code
         except IOError as e:
             print "errorurl==============================" + str(url)
             return -1
 
 if __name__ == '__main__':
-    scanobj = ScanWebSite(scanUrl="http://wap.sn.10086.cn")
-    scanobj.start()
+    # scanobj = ScanWebSite(scanUrl="http://wap.sn.10086.cn")
+    # scanobj.start()
+    if len(sys.argv) != 2:
+        print "please useage: scan  url"
+        print "forexample scan  http://wap.sn.10086.cn"
+    else :
+        scanobj = ScanWebSite(scanUrl=sys.argv[1])
+        scanobj.start()
