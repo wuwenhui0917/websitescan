@@ -20,8 +20,8 @@ def main():
     # 设定一个客户端链接时的标语
     handler.banner = "welcome I.am wwh."
 
-    # handler.masquerade_address = '151.25.42.11'#指定伪装ip地址
-    # handler.passive_ports = range(60000, 65535)#指定允许的端口范围
+    handler.masquerade_address = '151.25.42.11'#指定伪装ip地址
+    handler.passive_ports = range(60000, 65535)#指定允许的端口范围
 
     address = ("127.0.0.1", 21)  # FTP一般使用21,20端口
     server = FTPServer(address, handler)  # FTP服务器实例

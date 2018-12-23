@@ -49,7 +49,7 @@ class handleThread(threading.Thread):
 
     def run(self):
         print self.getName()+"线程开始，扫描地址为："+str(self.scanurl)+" 扫描深度为："+str(self.deep)+" 扫描日志为："+str(self.transid)+".log"
-        scanobj = ScanWebSite(scanUrl=self.scanurl, logname=str(self.transid)+".log")
+        scanobj = ScanWebSite(scanUrl=self.scanurl, deep=int(self.deep), logname=str(self.transid)+".log")
         scanobj.start()
         ftptag = int(config.getvalue("ftptag"))
         if ftptag == 1:
