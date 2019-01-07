@@ -271,7 +271,7 @@ class ScanWebSite(object):
         #     self.logFile.writeLine(str(visiturl).strip()+"    "+str(code))
 
         #∂‡œﬂ≥Ã…®√Ë
-        scanthread = ScanThread(self.logFile,listurl,self.htmllist,self.basedoamin,self)
+        scanthread = ScanThread(self.logFile,listurl,self.htmllist,self.basedoamin,self,parenturl=baseurl)
         scanthread.run()
 
             # print str(visiturl) + "\t=============result========:" + str(code)

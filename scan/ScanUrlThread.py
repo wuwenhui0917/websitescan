@@ -1,11 +1,12 @@
 #coding=GBK
 import threading
 import urllib2
+from configfile import *
 import urlparse
 
 
 class ScanThread(threading.Thread):
-    def __init__(self,LogFile,listurl,htmllist,basedomain,scansite):
+    def __init__(self,LogFile,listurl,htmllist,basedomain,scansite,parenturl):
 
         threading.Thread.__init__(self)
         self.logfile = LogFile
@@ -13,7 +14,17 @@ class ScanThread(threading.Thread):
         self.basedoamin = basedomain
         self.scansite = scansite
         self.scansite.addthread()
-
+        self.parentUrl = parenturl
+        config = ConfigFile()
+        #使用代理处理
+        proxy = config.getStringvalue("proxy")
+        if proxy == "true":
+            #设置代理
+            #proxyConfig = 'http://%s:%s@%s' % ('userName', 'password', 'proxy')
+            proxyconfig = 'http://%s:%s@%s' % (config.getStringvalue("proxyuserName"), config.getStringvalue("proxypassword"), config.getStringvalue("proxyUrl"))
+            opener = urllib2.build_opener(urllib2.ProxyHandler({'http': proxyconfig}))
+            urllib2.install_opener(opener)
+            print "设置代理成功 设置为："+proxyconfig
 
     def getPageContent(self, url):
         try:
@@ -36,7 +47,7 @@ class ScanThread(threading.Thread):
                 code = self.getPageContent(visiturl)
                 if self.logfile:
 
-                    self.logfile.writeLine(str(visiturl).strip() + "    " + str(code))
+                    self.logfile.writeLine(str(visiturl).strip() + "    " + str(code)+"    "+str(self.parentUrl))
                 else:
                     print(str(visiturl).strip() + "    " + str(code))
                 #加入已经扫描队列
