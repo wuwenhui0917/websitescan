@@ -60,7 +60,7 @@ class handleThread(threading.Thread):
             print "frpip="+config.getStringvalue("ftpip")
             print "ftppwd="+config.getStringvalue("ftppwd")
             print "ftpuser="+config.getStringvalue("ftpuser")
-            print "port=" + config.getStringvalue("port")
+            print "ftpport=" + config.getStringvalue("ftpport")
 
             if ftptype == 'ftp':
                 sft = FtpClient(host=config.getStringvalue("ftpip"),user=config.getStringvalue("ftpuser"),
