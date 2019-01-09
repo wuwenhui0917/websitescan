@@ -4,7 +4,7 @@ import os
 import sys
 
 
-class FtpClient(object):
+class SFtpClient(object):
 
     def __init__(self, ftpip, ftpuser, ftppasswd, port=22):
         self.ftpip = ftpip
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     if len(sys.argv) != 6:
         print "please use sftpclient  ip username password  localfile(fullname)  remotefile(fullname)"
         exit(1)
-    sftp = FtpClient(sys.argv[1], sys.argv[2], sys.argv[3])
+    sftp = SFtpClient(sys.argv[1], sys.argv[2], sys.argv[3])
     sftp.connection()
     sftp.upload(sys.argv[4], sys.argv[5])
     sftp.close()

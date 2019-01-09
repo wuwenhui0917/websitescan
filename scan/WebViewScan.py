@@ -3,6 +3,9 @@
 # 网站扫描工具，扫描网站内部中所有的url，js等资源
 # author:wuwh
 import time
+import urllib2
+import re
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import urllib
@@ -83,6 +86,18 @@ def startURL(url):
 
     close()
 
+##
+## 获取页面内容
+##
+def getFileContent(url):
+    try:
+      page = urllib2.urlopen(url, timeout=3).read()
+      return page;
+    except Exception as e:
+      print "context get error"
+      return None
+
+
 
 def execute(baseurl):
     # chrome.get("http://service.sn.10086.cn/pch5/index/html/index.html")
@@ -140,7 +155,20 @@ def execute(baseurl):
         strlinksrcurl = str(linksrcurl)
         if strlinksrcurl != None and strlinksrcurl != '':
             print 'link:url' + strlinksrcurl
-            listurl.append(getRealUrl(strlinksrcurl, baseurl))
+            cssrealurl = getRealUrl(strlinksrcurl, baseurl)
+            listurl.append(cssrealurl)
+            csscontent = getPageContent(cssrealurl)
+            try:
+                #提取css中的url：
+                cssurl = re.findall(r"background:url\((.*)\)", csscontent, re.S)
+                for csseleurl in cssurl:
+
+                    cssrealurl = getRealUrl(csseleurl, cssrealurl)
+                    print "提取出url为："+str(cssrealurl)
+                    listurl.append(cssrealurl)
+            except Exception as e:
+                print "提取css 中的url异常"
+
     # 扫面js
     scriptlinks = chrome.find_elements(By.TAG_NAME, "script")
     for jslink in scriptlinks:
@@ -153,6 +181,22 @@ def execute(baseurl):
     # imglist  = chrome.find_elements(By.TAG_NAME,"a")
     # chrome.close();
 
+    try:
+        #处理html 里面的load等方法
+        pageinfo = getPageContent(baseurl)
+        loadinfo =re.findall(r"load\('(.*)'\)", pageinfo, re.S)
+        print '提取 html 中 load加载url'
+        for loadtext in loadinfo:
+            print "提取出来的地址为："+str(loadtext)
+            reailurl = getRealUrl(loadtext, baseurl)
+            print "转化成访问地址为：" + str(reailurl)
+            listurl.append(reailurl)
+    except Exception as e:
+          print '提取html 内容异常'
+
+
+
+
     for visiturl in listurl:
         code = getPageContent(visiturl)
         print str(visiturl) + "\t=============result========:" + str(code)
@@ -163,7 +207,15 @@ if __name__ == '__main__':
     if strurl!=None and strurl!='':
         # execute("http://service.sn.10086.cn/pch5/index/html/index.html")
         # execute(strurl)
-        startURL("http://service.sn.10086.cn/pch5/index/html/index.html")
+        # pageinfo = getFileContent("http://www.ln.10086.cn/service/static/zhaopin/testDL.html")
+        # pageinfo="load("http://wwww.hello.com")"
+        # brand = re.findall(r"load\('(.*)'\)", pageinfo, re.S)[0]
+        # urlcontext = " background:url(../images/close.png); float:left; margin:12px 0 0 20px;cursor:pointer;}"
+        urlcontext = getFileContent("http://www.ln.10086.cn/service/static/ln_tail/css/foot.css")
+
+        cssurl = re.findall(r"background:url\((.*)\)", urlcontext, re.S)[0]
+
+        print cssurl
 
 
 

@@ -3,6 +3,8 @@ from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 import threading
 from configfile import *
 from multiprocessing import Process
+
+from ftpclient import FtpClient
 from scanwebsite import *
 from SftpClient import *
 from httpclient import *
@@ -52,14 +54,28 @@ class handleThread(threading.Thread):
         scanobj = ScanWebSite(scanUrl=self.scanurl, deep=int(self.deep), logname=str(self.transid)+".log")
         scanobj.start()
         ftptag = int(config.getvalue("ftptag"))
+        ftptype = int(config.getvalue("ftptype"))
         if ftptag == 1:
+
             print "frpip="+config.getStringvalue("ftpip")
             print "ftppwd="+config.getStringvalue("ftppwd")
             print "ftpuser="+config.getStringvalue("ftpuser")
-            sft = FtpClient(ftpip=config.getStringvalue("ftpip"),
-                            ftppasswd=config.getStringvalue("ftppwd"),
-                            ftpuser=config.getStringvalue("ftpuser")
-                            )
+            print "port=" + config.getStringvalue("port")
+
+            if ftptype == 'ftp':
+                sft = FtpClient(host=config.getStringvalue("ftpip"),user=config.getStringvalue("ftpuser"),
+                                 passwd=config.getStringvalue("ftppwd"), timeout=-999,port=config.getStringvalue("port")
+                                 )
+                # sft = FtpClient(host=config.getStringvalue("ftpip"),
+                #                 user=config.getStringvalue("ftpuser"),
+                #                 passwd=ftppasswd=config.getStringvalue("ftppwd")
+                #                  )
+            else:
+
+                sft = SFtpClient(ftpip=config.getStringvalue("ftpip"),
+                                ftppasswd=config.getStringvalue("ftppwd"),
+                                ftpuser=config.getStringvalue("ftpuser")
+                                )
             try:
                 sft.connection()
                 sft.upload(str(self.transid)+".log",config.getStringvalue("ftpdir")+"/"+str(self.transid)+".log")
