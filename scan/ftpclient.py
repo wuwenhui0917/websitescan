@@ -24,11 +24,13 @@ class FtpClient(object):
 
     def upload(self,localfile, remotedir):
         filename = os.path.basename(localfile)
+        print filename
+        print localfile
         # remotetempdir = remotedir
         # if str(remotedir).endswith("/"):
         #     remotetempdir = remotetempdir + filename
-        self.ftp.cwd(remotedir)
-        self.ftp.storbinary(filename, open(localfile, 'rb'))
+        # self.ftp.cwd(remotedir)
+        self.ftp.storbinary(filename, open(localfile, 'rb'),1024)
         self.ftp.quit()
 
     def close(self):
@@ -37,5 +39,8 @@ class FtpClient(object):
 
 
 
-
+if __name__ == '__main__':
+    ftp = FtpClient('127.0.0.1','user','12345',-999)
+    ftp.connection()
+    ftp.upload("E:\software\FlashFXPNew\Stats.dat","/Documents and Settings/")
 

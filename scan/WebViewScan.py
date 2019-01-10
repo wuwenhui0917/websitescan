@@ -1,7 +1,7 @@
 # coding:utf-8
 
 # 网站扫描工具，扫描网站内部中所有的url，js等资源
-# author:wuwh
+# author:wuwh 测试使用
 import time
 import urllib2
 import re
@@ -11,8 +11,8 @@ from selenium.webdriver.common.by import By
 import urllib
 import urlparse
 
-chrome = webdriver.Chrome()
-chrome.set_window_size(0, 0)
+chrome =None;
+# chrome.set_window_size(0, 0)
 # 当前domain
 domain = '';
 # 已经扫描列表
@@ -39,7 +39,7 @@ def parseUrl(str_url):
 
 def getPageContent(url):
     try:
-        page = urllib.urlopen(url)
+        page = urllib2.urlopen(url)
         if page.code != 200:
             print url + "\t" + str(page.code)
         return page.code;
@@ -203,17 +203,21 @@ def execute(baseurl):
 
 
 if __name__ == '__main__':
-    strurl = raw_input("请输入要扫描的页面: ")
-    if strurl!=None and strurl!='':
+    # strurl = raw_input("请输入要扫描的页面: ")
+    # if strurl!=None and strurl!='':
         # execute("http://service.sn.10086.cn/pch5/index/html/index.html")
         # execute(strurl)
         # pageinfo = getFileContent("http://www.ln.10086.cn/service/static/zhaopin/testDL.html")
         # pageinfo="load("http://wwww.hello.com")"
         # brand = re.findall(r"load\('(.*)'\)", pageinfo, re.S)[0]
         # urlcontext = " background:url(../images/close.png); float:left; margin:12px 0 0 20px;cursor:pointer;}"
-        urlcontext = getFileContent("http://www.ln.10086.cn/service/static/ln_tail/css/foot.css")
+        urlcontext = getFileContent("http://www.ln.10086.cn/service/static/style/common/ln_index.css")
+        print urlcontext
+        cssurl = re.findall(r"url\((.+?)\)", urlcontext)
+        for csseleurl in cssurl:
+            print csseleurl
 
-        cssurl = re.findall(r"background:url\((.*)\)", urlcontext, re.S)[0]
+            print "提取出url为：" + str(csseleurl)
 
         print cssurl
 

@@ -14,6 +14,7 @@ from logfile import *
 from webmap import *
 from ScanUrlThread import *
 import sys
+import re
 
 
 
@@ -148,6 +149,15 @@ class ScanWebSite(object):
     #     url =  self.chrome.execute_cdp_cmd("document.referrer");
     # }
 
+
+    def getFileContent(self,urlparam):
+        try:
+            page = urllib2.urlopen(urlparam, timeout=3).read()
+            return page;
+        except Exception as e:
+            print "context get error"
+            return None
+
     def execute(self,baseurl):
 
         urlinfos = urlparse.urlparse(str(baseurl))
@@ -250,6 +260,18 @@ class ScanWebSite(object):
                 cssurl = self.getRealUrl(strlinksrcurl, baseurl)
                 if cssurl not in self.listhassacnaurl:
                    listurl.append(cssurl)
+                print ("css url========="+cssurl)
+                csscontent =self.getFileContent(cssurl)
+                try:
+                    # 提取css中的url：
+                    recssurl = re.findall(r"url\((.+?)\)", csscontent)
+                    for csseleurl in recssurl:
+                        cssurl2 =  str( csseleurl).replace("\"","")
+                        cssrealurl = self.getRealUrl(cssurl2, cssurl)
+                        print "提取出url为：" + str(cssrealurl)
+                        listurl.append(cssrealurl)
+                except Exception as e:
+                    print ("提取css 中的url异常:",e)
         # 扫面js
         scriptlinks = self.chrome.find_elements(By.TAG_NAME, "script")
         for jslink in scriptlinks:
@@ -265,6 +287,20 @@ class ScanWebSite(object):
         # chrome.close();
 
 
+        try:
+            # 处理html 里面的load等方法
+            pageinfo = self.getFileContent(baseurl)
+            loadinfo = re.findall(r"load\('(.+?)'\)", pageinfo)
+            print '提取 html 中 load加载url'
+            for loadtext in loadinfo:
+                print "提取出来的地址为：" + str(loadtext)
+                reailurl =self.getRealUrl(str(loadtext), baseurl)
+                print "转化成访问地址为：" + str(reailurl)
+                listurl.append(reailurl)
+        except Exception as e:
+            print '提取html 内容异常'
+
+        print listurl
 
         # for visiturl in listurl:
         #     code = self.getPageContent(visiturl)

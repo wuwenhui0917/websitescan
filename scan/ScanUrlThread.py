@@ -15,9 +15,13 @@ class ScanThread(threading.Thread):
         self.scansite = scansite
         self.scansite.addthread()
         self.parentUrl = parenturl
+        print 'init thread....'
         config = ConfigFile()
         #使用代理处理
-        proxy = config.getStringvalue("proxy")
+        proxy = config.getvalue("proxy")
+        if proxy ==None :
+            proxy='-1'
+
         if proxy == "true":
             #设置代理
             #proxyConfig = 'http://%s:%s@%s' % ('userName', 'password', 'proxy')
@@ -36,14 +40,15 @@ class ScanThread(threading.Thread):
             print "errorurl==============================" + str(url)
             return -1
 
+
     def run(self):
 
         #print "扫描线程"+self.getName()+"开始...."
 
-
+        print 'run data==='
+        print self.data
         if self.data:
             for visiturl in self.data:
-                # print "thread................"+str(self.scansite.threadcount);
                 code = self.getPageContent(visiturl)
                 if self.logfile:
 
