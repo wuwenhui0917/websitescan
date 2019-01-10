@@ -25,12 +25,12 @@ class FtpClient(object):
     def upload(self,localfile, remotedir):
         filename = os.path.basename(localfile)
         print filename
-        print localfile
+        print remotedir
         # remotetempdir = remotedir
         # if str(remotedir).endswith("/"):
         #     remotetempdir = remotetempdir + filename
         # self.ftp.cwd(remotedir)
-        self.ftp.storbinary(filename, open(localfile, 'rb'),1024)
+        self.ftp.storbinary('STOR '+remotedir, open(localfile, 'rb'),1024)
         self.ftp.quit()
 
     def close(self):
