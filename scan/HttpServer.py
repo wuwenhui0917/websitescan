@@ -54,7 +54,7 @@ class handleThread(threading.Thread):
         scanobj = ScanWebSite(scanUrl=self.scanurl, deep=int(self.deep), logname=str(self.transid)+".log")
         scanobj.start()
         ftptag = int(config.getvalue("ftptag"))
-        ftptype = config.getvalue("ftptype")
+        ftptype = str(config.getvalue("ftptype")).strip()
         if ftptag == 1:
             print '>>>>>>>>>>>>>'+str(ftptype)
             print "frpip="+config.getStringvalue("ftpip")
@@ -62,11 +62,11 @@ class handleThread(threading.Thread):
             print "ftpuser="+config.getStringvalue("ftpuser")
             print "ftpport=" + config.getStringvalue("ftpport")
 
-            if ftptype == 'ftp':
+            if ftptype == "ftp":
                 print '>>>>>>>>>>>>>ftp...'
 
                 sft = FtpClient(host=config.getStringvalue("ftpip"),user=config.getStringvalue("ftpuser"),
-                                 passwd=config.getStringvalue("ftppwd"), timeout=-999,port=config.getStringvalue("port")
+                                 passwd=config.getStringvalue("ftppwd"), timeout=-999,port=config.getStringvalue("ftpport").strip()
                                  )
                 # sft = FtpClient(host=config.getStringvalue("ftpip"),
                 #                 user=config.getStringvalue("ftpuser"),
