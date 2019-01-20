@@ -1,7 +1,11 @@
-# coding:utf-8
+# coding:GBK
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
+
+
+chci = input("ÊäÈë³µ´Î°´»Ø³µÍË³ö:")
+print ("Ñ¡ÔñµÄ³µ´ÎÊÇ£º"+chci);
 
 checi = "G105"
 diriver = webdriver.Chrome()
@@ -25,7 +29,7 @@ def start():
           # time.sleep(3)
           result = find_ticket()
           if result==1:
-              print u"æŠ¢ç¥¨æˆåŠŸï¼Œè¯·æ³¨æ„æ”¯ä»˜"
+              print u"ÇÀÆ±³É¹¦£¬Çë×¢ÒâÖ§¸¶"
               return
         except:
           print "error"
@@ -53,11 +57,11 @@ def find_ticket():
             # print str(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")+aele.text
             if aele!=None and aele.text==checi:
                 print ">>>>>>>>>>>>>>>>>"+tds[3].text
-                if tds[3].text != u'--' and tds[3].text != u'æ— ':
+                if tds[3].text != u'--' and tds[3].text != u'ÎŞ':
                     print 'oklllllllll'
                     tds[12].find_element(By.TAG_NAME, "a").click()
                     reloadcount=0
-                    # è¿›å…¥åˆ°è®¢å•é¡µé¢
+                    # ½øÈëµ½¶©µ¥Ò³Ãæ
                     while diriver.current_url != "https://kyfw.12306.cn/otn/confirmPassenger/initDc":
                         if reloadcount==60:
                             return;
@@ -67,16 +71,16 @@ def find_ticket():
                     ren = diriver.find_element(By.ID, "normalPassenger_0")
                     ren.click()
                     time.sleep(1)
-                    # æäº¤è®¢å•
+                    # Ìá½»¶©µ¥
                     diriver.find_element(By.ID, "submitOrder_id").click()
                     time.sleep(1)
-                    # æ ¸å¯¹ä¿¡æ¯
+                    # ºË¶ÔĞÅÏ¢
                     diriver.find_element(By.ID, "qr_submit_id").click()
                     while (str(diriver.current_url).index("/payOrder/init")) == -1:
                         time.sleep(1)
 
-                    print "æŠ¢ç¥¨æˆåŠŸ"
-                    # å…³é—­
+                    print "ÇÀÆ±³É¹¦"
+                    # ¹Ø±Õ
                     diriver.close()
                     return 1
 
@@ -84,5 +88,7 @@ def find_ticket():
     return 0
 
 if __name__ == '__main__':
-    strpasswprd = raw_input("ç™»é™†æˆåŠŸåè¯·æŒ‰ä»»æ„é”®: ")
+
+
+    strpasswprd = raw_input("µÇÂ½³É¹¦ºó°´ÈÎÒâ¼ü¿ªÊ¼ ")
     start()

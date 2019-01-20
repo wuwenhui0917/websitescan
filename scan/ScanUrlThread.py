@@ -79,4 +79,4 @@ class ScanThread(threading.Thread):
         else :
             print "nodata"
         print "É¨Ãè£º"+self.getName()+" ½áÊø"
-        self.scansite.release();
+        self.scansite.release()

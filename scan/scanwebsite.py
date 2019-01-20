@@ -309,6 +309,7 @@ class ScanWebSite(object):
         #∂‡œﬂ≥Ã…®√Ë
         scanthread = ScanThread(self.logFile,listurl,self.htmllist,self.basedoamin,self,parenturl=baseurl)
         scanthread.run()
+        del listurl
 
             # print str(visiturl) + "\t=============result========:" + str(code)
     #
