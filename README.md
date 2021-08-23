@@ -19,7 +19,7 @@
      1.将安装包中的chromedriver.exe 拷贝到chrome安装目录
      2.双击启动HttpServer.exe启动，如出现如下界面表示启动成功。第一次启动如果没有配置文件config.conf时，自己会自动生成配置，环境配置生成后可自行修改
 #### 远程调用：
-     打开浏览器直接访问如下地址（ecop可以直接调用这个地址）：http://127.0.0.1:9999/scan?transid=123&scanurl=http://wap.sn.10086.cn/h5/index/html/home.html&deep=3
+     打开浏览器直接访问如下地址（可以直接调用这个地址）：http://127.0.0.1:9999/scan?transid=123&scanurl=http://wap.sn.10086.cn/h5/index/html/home.html&deep=3
      其中transid为扫描流水必须输入，scanurl为扫描网站地址必须输入，deep为扫描深度默认为1层非必输项。程序会生成扫面地图（以输入网站为根节点，下钻3层，整个扫描会形成3层树形结构）
      如出现如下日志信息表示开始扫描（日志会频繁滚动）
 #### 扫描结果
